@@ -1,0 +1,70 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: playnetz
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5433:5432"
+    networks:
+      - postgres
+    restart: always
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_D EFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: always
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql:/var/lib/mysql
+
+    ports:
+      - "3308:3306"
+    networks:
+      - mysql
+    restart: always
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "5052:80"
+    networks:
+      - mysql
+    restart: always
+
+networks:
+  postgres:
+    driver: bridge
+  mysql:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
+  mysql:
+  phpmyadmin:
